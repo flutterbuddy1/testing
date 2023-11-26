@@ -1,0 +1,42 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt     DateTime    @default(now())
+  firstName     String?
+  id            String      @id @default(cuid())
+  lastName      String?
+  password      String
+  roles         Json
+  transitions   Transition? @relation(fields: [transitionsId], references: [id])
+  transitionsId String?     @unique
+  updatedAt     DateTime    @updatedAt
+  username      String      @unique
+  wallet        Wallet?     @relation(fields: [walletId], references: [id])
+  walletId      String?
+}
+
+model Wallet {
+  balance       String
+  createdAt     DateTime    @default(now())
+  id            String      @id @default(cuid())
+  transitions   Transition? @relation(fields: [transitionsId], references: [id])
+  transitionsId String?     @unique
+  updatedAt     DateTime    @updatedAt
+  users         User[]
+}
+
+model Transition {
+  createdAt    DateTime @default(now())
+  id           String   @id @default(cuid())
+  transitionId String?
+  updatedAt    DateTime @updatedAt
+  userId       User?
+  walletId     Wallet?
+}
